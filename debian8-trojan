@@ -1,0 +1,92 @@
+6$ for 3 years 
+
+https://www.sentris.net/billing/cart.php?gid=18
+
+netfilx 63.223.xxx.xxx
+
+debian8 install trojan
+
+apt update 
+
+apt upgrade -y
+
+cp /usr/share/zoneinfo/Asia/Shanghai /etc/localtime
+
+apt install -y socat nginx curl sudo  libcap2-bin xz-utils vim unzip cron
+
+sudo bash -c "$(curl -fsSL https://raw.githubusercontent.com/trojan-gfw/trojan-quickstart/master/trojan-quickstart.sh)"
+
+cp /usr/local/bin/trojan /root
+
+chmod +x trojan
+
+vi /usr/local/etc/trojan/config.json  #modify password to your password,modify /path/to/ to /usr/local/etc/trojan/
+
+curl  https://get.acme.sh | sh   #Terminate ssh connection
+
+export CF_Key="Global API"
+export CF_Email="email@email.com"
+
+acme.sh --issue --dns dns_cf -d domin.com   #modify domin.com to your domin
+
+acme.sh --install-cert -d domin.com --key-file /usr/local/etc/trojan/private.key --fullchain-file /usr/local/etc/trojan/certificate.crt   #modify domin.com to your domin
+
+acme.sh  --upgrade  --auto-upgrade
+
+chmod -R 755 /usr/local/etc/trojan
+
+
+bash -c 'echo "
+server {
+    listen 127.0.0.1:80 default_server;
+
+    server_name domin.com;
+
+    location / {
+        proxy_pass https://www.ietf.org;
+    }
+
+}
+
+server {
+    listen 127.0.0.1:80;
+
+    server_name IP; #modify IP  to your VPS's IP address
+
+    return 301 https://domin.com$request_uri;
+}
+
+server {
+    listen 0.0.0.0:80;
+    listen [::]:80;
+
+    server_name _;
+
+    location / {
+        return 301 https://domin.com$request_uri;
+    }
+}
+" > /etc/nginx/sites-available/default'
+
+systemctl restart nginx
+
+wget --no-check-certificate https://github.com/tcp-nanqinlang/lkl-rinetd/releases/download/1.1.0/tcp_nanqinlang-rinetd-debianorubuntu.sh
+
+chmod +x tcp_nanqinlang-rinetd-debianorubuntu.sh
+
+bash tcp_nanqinlang-rinetd-debianorubuntu.sh
+
+should be 443 and 80
+
+crontab -e
+
+0 */3 * * * /sbin/reboot
+1 */3 * * * ./trojan /usr/local/etc/trojan/config.json 
+
+reboot
+
+later 
+
+./trojan /usr/local/etc/trojan/config.json
+
+enjoy!
